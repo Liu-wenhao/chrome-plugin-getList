@@ -6,7 +6,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   console.log('====================================');
   sendResponse({
     type: true ? 'success' : 'danger',
-    message: '成功结束'
+    message: '成功结束',
+    next: false
   });
   //if (request.action == 'getCookie') {
   //  chrome.cookies.getAll({ domain: request.domain }, function (cookies) {

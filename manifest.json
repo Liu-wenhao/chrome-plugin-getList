@@ -42,6 +42,15 @@
         "content-script.js"
       ],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://seller.kuajingmaihuo.com/*"
+      ],
+      "js": [
+        "getList.js"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "content_security_policy": {
