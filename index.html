@@ -1,14 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style rel="stylesheet" type="text/css" :href="./css/index.css"></style>
+    <style>
+      .container {
+        width: 400px;
+        height: 500px;
+        padding: 0 10px;
+        margin: 0 auto;
+        border: 1px solid #ccc;
+      }
+      h1 {
+        color: #333;
+        font-size: 22px;
+        font-weight: 400;
+      }
+      .sync-btn {
+        line-height: 1.499;
+        position: relative;
+        display: inline-block;
+        font-weight: 400;
+        white-space: nowrap;
+        text-align: center;
+        background-image: none;
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.015);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
+        height: 28px;
+        padding: 0 10px;
+        font-size: 14px;
+        border-radius: 4px;
+        color: rgba(0, 0, 0, 0.65);
+        background-color: #fff;
+        border: 1px solid #d9d9d9;
+      }
+      .sync-btn::before {
+        position: absolute;
+        top: -1px;
+        right: -1px;
+        bottom: -1px;
+        left: -1px;
+        z-index: 1;
+        display: none;
+        background: #fff;
+        border-radius: inherit;
+        opacity: 0.35;
+        transition: opacity 0.2s;
+        content: '';
+        pointer-events: none;
+      }
+      .sync-btn-icon {
+        width: 15px;
+        height: 15px;
+        vertical-align: text-top;
+      }
 
-</body>
-<script>
-  window.postMessage({ cmd: "invoke", code: "getBuffCookie" }, "*")
-</script>
+      .ant-spin-spinning {
+        position: static;
+        display: inline-block;
+        opacity: 1;
+      }
+      .ant-spin {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        color: rgba(0, 0, 0, 0.65);
+        font-size: 14px;
+        font-variant: tabular-nums;
+        line-height: 1.5;
+        list-style: none;
+        font-feature-settings: 'tnum';
+        position: absolute;
+        /*display: none;*/
+        color: #1890ff;
+        text-align: center;
+        vertical-align: middle;
+        transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+      }
+      .ant-spin-dot {
+        position: relative;
+        display: inline-block;
+        font-size: 20px;
+        width: 1em;
+        height: 1em;
+      }
+      .ant-spin-dot-spin {
+        transform: rotate(45deg);
+        -webkit-animation: antRotate 1.2s linear infinite;
+        animation: antRotate 1.2s linear infinite;
+      }
+      .ant-spin-dot-item {
+        position: absolute;
+        display: block;
+        width: 9px;
+        height: 9px;
+        background-color: #1890ff;
+        border-radius: 100%;
+        transform: scale(0.75);
+        transform-origin: 50% 50%;
+        opacity: 0.3;
+        -webkit-animation: antSpinMove 1s linear infinite alternate;
+        animation: antSpinMove 1s linear infinite alternate;
+      }
+      .ant-spin-dot-item:first-child {
+        top: 0;
+        left: 0;
+      }
+      .ant-spin-dot-item:nth-child(2) {
+        top: 0;
+        right: 0;
+        -webkit-animation-delay: 0.8s;
+        animation-delay: 0.8s;
+      }
+      .ant-spin-dot-item:nth-child(3) {
+        right: 0;
+        bottom: 0;
+        -webkit-animation-delay: 0.8s;
+        animation-delay: 0.8s;
+      }
+      .ant-spin-dot-item:nth-child(4) {
+        bottom: 0;
+        left: 0;
+        -webkit-animation-delay: 1.2s;
+        animation-delay: 1.2s;
+      }
+      @keyframes antRotate {
+        100% {
+          transform: rotate(405deg);
+        }
+      }
+      @keyframes antSpinMove {
+        100% {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>同步数据</h1>
+      <div>
+        <span>销售管理</span>
+        <!--<span>(正在同步...)</span>-->
+        <span>(同步完成:2021-08-01 10:00:00)</span>
+        <button class="sync-btn" id="syncSaleManagementBtn">
+          <img class="sync-btn-icon" src="./icons/sync.png" alt="" />同步
+        </button>
+        <button class="sync-btn" id="syncSaleManagementBtnDisabled">
+          <img class="sync-btn-icon" src="./icons/sync.png" alt="" />停止
+        </button>
+        <div class="ant-spin ant-spin-spinning">
+          <span class="ant-spin-dot ant-spin-dot-spin"
+            ><i class="ant-spin-dot-item"></i><i class="ant-spin-dot-item"></i
+            ><i class="ant-spin-dot-item"></i><i class="ant-spin-dot-item"></i
+          ></span>
+        </div>
+      </div>
+
+      <div id="syncResult"></div>
+    </div>
+  </body>
+  <script src="./js/jquery-3.7.1.min.js"></script>
+  <script src="./js/popup.js"></script>
 </html>

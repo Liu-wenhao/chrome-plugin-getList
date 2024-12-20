@@ -4,6 +4,21 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   console.log('====================================');
   console.log('background.js收到拦截的响应：', request);
   console.log('====================================');
+  const { type } = request; // 解构赋值
+//  if(type === 'inject') {
+//    chrome.tabs.query({}, (tabs) => {
+//      for (const tab of tabs) {
+//        if(tabId == tab.id) {
+//          chrome.scripting.executeScript({
+//            target: { tabId: tab.id },
+//            files: ["inject.js"],
+//            world: 'MAIN'
+//          });
+//        }
+//
+//      }
+//    });
+//  }
   sendResponse({
     type: true ? 'success' : 'danger',
     message: '成功结束',

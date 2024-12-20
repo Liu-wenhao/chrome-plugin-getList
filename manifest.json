@@ -1,5 +1,5 @@
 {
-  "name": "hahaha",
+  "name": "同步",
   "version": "1.0.0",
   "manifest_version": 3,
   "description": "哈哈哈",
@@ -21,7 +21,8 @@
     "storage"
   ],
   "host_permissions": [
-    "https://seller.kuajingmaihuo.com/*"
+    "https://seller.kuajingmaihuo.com/*",
+    "https://www.baidu.com/*"
   ],
   "content_scripts": [
     {
@@ -36,7 +37,8 @@
     },
     {
       "matches": [
-        "https://seller.kuajingmaihuo.com/*"
+        "https://seller.kuajingmaihuo.com/*",
+        "https://www.baidu.com/*"
       ],
       "js": [
         "content-script.js"
@@ -53,7 +55,12 @@
       "run_at": "document_idle"
     }
   ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+  "action": {
+    "default_icon": "icons/icon_32.png",
+    "default_title": "同步",
+    "default_popup": "index.html"
   }
+  //"content_security_policy": {
+  //  "extension_pages": "script-src 'self'; object-src 'self'"
+  //}
 }
