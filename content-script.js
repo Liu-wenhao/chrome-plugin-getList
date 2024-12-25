@@ -131,7 +131,7 @@ function injectTableRowButtons() {
       // 为按钮添加样式
       button.style.color = '#0071f3'; // 蓝色文字
       button.style.fontSize = '12px'; // 字体大小
-      button.style.margin = '6px 2px'; // 外边距
+      button.style.margin = '6px 0px'; // 外边距
       button.style.cursor = 'pointer'; // 鼠标指针样式
       button.setAttribute('sync-index', index);
       button.addEventListener('click', () => {
