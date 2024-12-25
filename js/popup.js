@@ -1,5 +1,7 @@
 // 销售管理接口
 const saleManagementApi = 'https://seller.kuajingmaihuo.com/marvel-mms/cn/api/kiana/venom/sales/management/listWarehouse';
+// 我的备货单接口
+const purchaseManagementApi = 'https://seller.kuajingmaihuo.com/oms/bg/venom/api/supplier/purchase/manager/querySubOrderList';
 
  // 获取当前tab标签
  const getCurrentTab = async () => {
