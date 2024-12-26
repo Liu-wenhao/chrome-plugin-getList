@@ -1,29 +1,61 @@
+//import { clickSearchBtn, clickNextPageBtn } from './page/list.js';
+//import { injectTableRowButtons } from './page/button.js';
+//import { insertInputValue } from './page/insetInput.js';
+
 // 是否模拟点击
 let isNext = false;
+
 // 当前监听url
-let targetUrl = 'https://seller.kuajingmaihuo.com/oms/bg/venom/api/supplier/purchase/manager/querySubOrderList';
-// 所有需要监听的url
+let targetUrl = '';
+
+// 所有需要监听的url  type 1: 列表插入同步按钮 2: 输入框插入值
 let allTargetUrlList = [
-  'https://seller.kuajingmaihuo.com/marvel-mms/cn/api/kiana/venom/sales/management/listWarehouse',
-  'https://seller.kuajingmaihuo.com/oms/bg/venom/api/supplier/purchase/manager/querySubOrderList',
-];
+  {
+    id: 1, // 销售管理
+    url: 'https://seller.kuajingmaihuo.com/marvel-mms/cn/api/kiana/venom/sales/management/listWarehouse',
+    resultName: 'subOrderList',
+    type: 1,
+  },
+  {
+    id: 2, // 我的备货单
+    url: 'https://seller.kuajingmaihuo.com/oms/bg/venom/api/supplier/purchase/manager/querySubOrderList',
+    resultName: 'subOrderForSupplierList',
+    type: 1,
+  },
+  {
+    id: 3, // 销售管理-申请备货
+    url: 'https://seller.kuajingmaihuo.com/oms/bg/venom/api/supplier/sales/management/queryStockBaseInfo',
+    resultName: 'subOrderList',
+    type: 2,
+  },
+]
+
 // 当前页面表格数据
 let tableList = [];
 
-  // 监听接口
+// 监听接口
 window.addEventListener(
   'message',
   event => {
     if (!event.data || Object.keys(event.data).length === 0) {
       return;
     }
+    if(!allTargetUrlList.map(item => item.url).includes(event.data.url)){
+      return;
+    }
     let { url, res } = event.data;
+    let resultData = res.result || {};
     // 向表格中自动注入按钮
-    if (!allTargetUrlList.includes(url)) return;
-    console.log('event', event.data);
-    const { subOrderList, subOrderForSupplierList } = res.result || {};
-    tableList = subOrderList || subOrderForSupplierList || [];
-    injectTableRowButtons();
+    let [ resultObj ] = allTargetUrlList.filter(item => item.url == url)
+    if (resultObj.type == 1) {
+      tableList = resultData[resultObj.resultName] || [];
+      injectTableRowButtons();
+    };
+    if (resultObj.type == 2) {
+      // 销售管理-申请备货-插入值
+      insertInputValue();
+      //applyForStockingUp();
+    };
     if(!targetUrl) return;
     let responseData = null;
     // popup点击同步按钮
@@ -110,7 +142,6 @@ function clickPageSize() {
 
 }
 
-
 // 表格中注入按钮同步当前行数据
 function injectTableRowButtons() {
   // 获取表格中的所有行
@@ -146,5 +177,50 @@ function injectTableRowButtons() {
       targetButton.parentNode.insertBefore(button, targetButton);
     }
     // 如果未找到目标按钮，不插入新按钮
+  });
+}
+
+
+function applyForStockingUp() {
+  // 获取表格中的所有行
+  const rows = document.querySelectorAll('tbody tr');
+  let index = -1;
+  rows.forEach(row => {
+    // 获取行中的申请备货按钮
+    const targetButton = Array.from(row.querySelectorAll('span'))
+  .find(btn => btn.textContent.trim() === '申请备货');
+  console.log('targetButton', targetButton);
+    if (targetButton) {
+      index++;
+      targetButton.setAttribute('sync-index', index);
+      targetButton.addEventListener('click', () => {
+        const rowIndex = targetButton.getAttribute('sync-index');
+        console.log('点击了申请备货按钮，当前行数据：', rowIndex, tableList[rowIndex]);
+        // 发消息给background.js，并接收其回复
+        chrome.runtime.sendMessage({ type: 'data', data: tableList[rowIndex] }, res => {
+          // 收到回复后在页面弹出提醒
+          console.log('收到回复', res);
+        });
+      });
+    }
+  });
+}
+
+function insertInputValue(){
+  // 获取表格中的所有行
+  const rows = document.querySelectorAll('tbody tr');
+  let index = -1;
+  rows.forEach(row => {
+    // 获取行中最后一个单元格的按钮
+    const tds = row.querySelector('td:last-child');
+    const targetInput = tds.querySelector('[data-testid="beast-core-inputNumber-htmlInput"]');
+    if (targetInput) {
+      index++;
+      targetInput.setAttribute('i', index);
+      targetInput.value = 15;
+      // 触发输入事件，以更新页面显示
+      const event = new Event('input', { bubbles: true });
+      targetInput.dispatchEvent(event);
+    }
   });
 }

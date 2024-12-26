@@ -30,7 +30,7 @@
         "https://seller.kuajingmaihuo.com/*"
       ],
       "js": [
-        "inject.js"
+        "js/inject.js"
       ],
       "world": "MAIN",
       "run_at": "document_start"
@@ -44,15 +44,6 @@
         "content-script.js"
       ],
       "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "https://seller.kuajingmaihuo.com/*"
-      ],
-      "js": [
-        "getList.js"
-      ],
-      "run_at": "document_idle"
     }
   ],
   "action": {
