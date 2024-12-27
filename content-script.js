@@ -127,7 +127,8 @@ window.addEventListener(
     };
     if (resultObj.type == 2) {
       // 销售管理-申请备货-插入值
-      batchInsertInventoryNum();
+      let skcs = Object.keys(resultData[resultObj.resultName] || {});
+      batchInsertInventoryNum(skcs);
       //insertInputValue();
       //applyForStockingUp();
     };
@@ -300,30 +301,46 @@ function insertInputValue(){
 }
 
 // 批量申请备货插入值
-function batchInsertInventoryNum(){
-  chrome.runtime.sendMessage({ type: 'getCookie' }, res => {
-    // 收到回复后在页面弹出提醒
-    console.log('getCookie', res);
-  });
+function batchInsertInventoryNum(skcs){
   // 获取表格中的所有行
   const element = document.querySelector('[data-testid="beast-core-icon"]');
   if(element) {
     shopName = element.textContent.trim();
   }
-  // 获取表格中的所有行
-  const theadTr = document.querySelectorAll('form thead tr');
-  theadTr.forEach(row => {
-    // 获取行中最后一个单元格的按钮
-    const th = row.querySelector('th:nth-last-child(2)');
-    if (th) {
-      th.innerHTML = `<span>${th.textContent}</span><br><span>库存数量</span>`;
+  const erpShopName = shopNameList.find(item => item.includes(shopName));
+  let data = {
+    shopNameList: [erpShopName],
+    pageNum: 1,
+    pageSize: 100,
+    productSkcIds: skcs.join(','),
+  }
+  chrome.runtime.sendMessage({ type: 'getInventoryNumData', data }, res => {
+    // 收到回复后在页面弹出提醒
+    if(res.code == 200) {
+      let resultData = res.data || [];
+      console.log('收到回复', res.data);
+      // 获取表格中的所有行
+      const theadTr = document.querySelectorAll('form thead tr');
+      theadTr.forEach(row => {
+        // 获取行中最后一个单元格的按钮
+        const th = row.querySelector('th:nth-last-child(2)');
+        if (th) {
+          th.innerHTML = `<span>${th.textContent}</span><br><span>库存数量</span>`;
+        }
+      });
+      const rows = document.querySelectorAll('form tbody tr');
+      let index = -1;
+      rows.forEach((row, index)=> {
+        // 获取行中最后一个单元格的按钮
+        const td = row.querySelector('td:nth-last-child(2)');
+        const color = row.querySelector('td:nth-last-child(4)').textContent.trim();
+        const target = resultData.find(item => item.color == color);
+        td.innerHTML =  `<span>${td.textContent}</span><br><span>${target.num }</span>`
+      });
+
     }
+
   });
-  const rows = document.querySelectorAll('form tbody tr');
-  let index = -1;
-  rows.forEach(row => {
-    // 获取行中最后一个单元格的按钮
-    const td = row.querySelector('td:nth-last-child(2)');
-    td.innerHTML =  `<span>${td.textContent}</span><br><span>12</span>`
-  });
+
+
 }
