@@ -8,6 +8,73 @@ let isNext = false;
 // 当前监听url
 let targetUrl = '';
 
+const shopNameList = [
+  'TemuI01EU-Naiveroo',
+  'TemuI01US-Naiveroo',
+  'TemuJ01EU-Ahcugour',
+  'TemuJ01US-Ahcugour',
+  'TemuI02EU-Foundove',
+  'TemuI02US-Foundove',
+  'Naiveroo-ww',
+  'TemuI03EU-KOIFORU',
+  'TemuI03US-KOIFORU',
+  'TemuD06-MeteOrZ',
+  'TemuF01-WAIHA',
+  'TemuH01EU-Novelfun',
+  'TemuH01US-Novelfun',
+  'TemuH02EU-Homsky',
+  'TemuH02US-Homsky',
+  'TemuG04-ASSAB',
+  'TemuG05-ANewgena',
+  'TemuG06-AFoldshop',
+  'TemuA07-KKitchenware',
+  'TemuE11-SKN',
+  'TemuA01-Faroonee',
+  'TemuA02-CChengShop',
+  'TemuA03-Throwate',
+  'TemuA04-Phylactous',
+  'TemuA05-Necklacek',
+  'TemuA06-Paintingart',
+  'TemuA08-Materialfab',
+  'TemuA09-Officedaily',
+  'TemuA10-Scriptumsset',
+  'TemuA11-Goodzeal',
+  'TemuB01-Shakeion',
+  'TemuB02-YgGsStudio',
+  'TemuB03-YgGsStudio B',
+  'TemuB04-YgGsStudio C',
+  'TemuC01-patiocover',
+  'TemuC02-NGSS',
+  'TemuC03-NGGSSaz',
+  'TemuC04-NGSSa',
+  'TemuD01-LTLT',
+  'TemuD02-cnRed',
+  'TemuD03-UOOU',
+  'TemuD04-RJRoom',
+  'TemuD05-RainbOow',
+  'TemuD07-arButus',
+  'TemuD08-Petunununia',
+  'TemuD09-Researchss',
+  'TemuD10-Gg0ograpePeed',
+  'TemuD11-CoNnfucius',
+  'TemuD12-SusieSjoh',
+  'TemuE01-Ubestu',
+  'TemuE02-Hibest',
+  'TemuE03-Specialties N',
+  'TemuE04-Specialties A',
+  'TemuE05-Specialties B',
+  'TemuE06-PMD',
+  'TemuE07-Shakeion B',
+  'TemuE08-Shakeion C',
+  'TemuE09-s x u',
+  'TemuE10-SXW',
+  'TemuG01-BauhiniaA',
+  'TemuG02-BauhiniaB',
+  'TemuG03-ASSwang',
+];
+
+let shopName = '';
+
 // 所有需要监听的url  type 1: 列表插入同步按钮 2: 输入框插入值
 let allTargetUrlList = [
   {
@@ -28,10 +95,17 @@ let allTargetUrlList = [
     resultName: 'subOrderList',
     type: 2,
   },
+  {
+    id: 4, // 销售管理-批量申请备货
+    url: 'https://seller.kuajingmaihuo.com/oms/bg/venom/api/supplier/sales/management/batchQueryApplyBoundLimitNum',
+    resultName: 'skcApplyBoundLimitNumMap',
+    type: 2,
+  },
 ]
 
 // 当前页面表格数据
 let tableList = [];
+
 
 // 监听接口
 window.addEventListener(
@@ -53,7 +127,8 @@ window.addEventListener(
     };
     if (resultObj.type == 2) {
       // 销售管理-申请备货-插入值
-      insertInputValue();
+      batchInsertInventoryNum();
+      //insertInputValue();
       //applyForStockingUp();
     };
     if(!targetUrl) return;
@@ -81,7 +156,6 @@ window.addEventListener(
 // 监听其他页面
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	const { api } = request;
-  console.log('request', api);
   // 处理请求
   if(api) {
     targetUrl = api;
@@ -205,10 +279,10 @@ function applyForStockingUp() {
     }
   });
 }
-
+// 单个申请备货插入值
 function insertInputValue(){
   // 获取表格中的所有行
-  const rows = document.querySelectorAll('tbody tr');
+  const rows = document.querySelectorAll('form tbody tr');
   let index = -1;
   rows.forEach(row => {
     // 获取行中最后一个单元格的按钮
@@ -222,5 +296,34 @@ function insertInputValue(){
       const event = new Event('input', { bubbles: true });
       targetInput.dispatchEvent(event);
     }
+  });
+}
+
+// 批量申请备货插入值
+function batchInsertInventoryNum(){
+  chrome.runtime.sendMessage({ type: 'getCookie' }, res => {
+    // 收到回复后在页面弹出提醒
+    console.log('getCookie', res);
+  });
+  // 获取表格中的所有行
+  const element = document.querySelector('[data-testid="beast-core-icon"]');
+  if(element) {
+    shopName = element.textContent.trim();
+  }
+  // 获取表格中的所有行
+  const theadTr = document.querySelectorAll('form thead tr');
+  theadTr.forEach(row => {
+    // 获取行中最后一个单元格的按钮
+    const th = row.querySelector('th:nth-last-child(2)');
+    if (th) {
+      th.innerHTML = `<span>${th.textContent}</span><br><span>库存数量</span>`;
+    }
+  });
+  const rows = document.querySelectorAll('form tbody tr');
+  let index = -1;
+  rows.forEach(row => {
+    // 获取行中最后一个单元格的按钮
+    const td = row.querySelector('td:nth-last-child(2)');
+    td.innerHTML =  `<span>${td.textContent}</span><br><span>12</span>`
   });
 }

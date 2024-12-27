@@ -22,12 +22,14 @@
   ],
   "host_permissions": [
     "https://seller.kuajingmaihuo.com/*",
-    "https://www.baidu.com/*"
+    "https://www.baidu.com/*",
+    "https://www.yigeerp.com/*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://seller.kuajingmaihuo.com/*"
+        "https://seller.kuajingmaihuo.com/*",
+        "https://www.yigeerp.com/*"
       ],
       "js": [
         "js/inject.js"
@@ -38,7 +40,7 @@
     {
       "matches": [
         "https://seller.kuajingmaihuo.com/*",
-        "https://www.baidu.com/*"
+        "https://www.baidu.com/"
       ],
       "js": [
         "content-script.js"
@@ -46,6 +48,9 @@
       "run_at": "document_start"
     }
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "action": {
     "default_icon": "icons/icon_32.png",
     "default_title": "同步",
